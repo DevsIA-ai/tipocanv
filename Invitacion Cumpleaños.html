@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="dc-runtime.js"></script>
+</head>
+<body>
+
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=EB+Garamond:ital@0;1&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #ede7e4; font-family: 'EB Garamond', Georgia, serif; }
+  a { color: #b45e83; text-decoration: none; }
+  a:hover { color: #97406a; }
+  @keyframes floaty { 0%,100% { transform: translateY(0) rotate(var(--r,0deg)); } 50% { transform: translateY(-7px) rotate(var(--r,0deg)); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  ::-webkit-scrollbar { width: 0; }
+</style>
+<script src="dc-elements.js"></script>
+</helmet>
+
+<div style="min-height:100vh; display:flex; justify-content:center; padding:0; background:#ede7e4;">
+<div style="width:100%; max-width:440px; background:#fdfbfa; position:relative; overflow:hidden; box-shadow:0 10px 60px rgba(120,80,95,.25);">
+
+  <!-- ===== HERO ===== -->
+  <section style="position:relative; margin:0; padding:0; width:100%; line-height:0;">
+    <img src="parte%20uno.png" alt="Happy Birthday" style="display:block; width:100%; height:auto;">
+  </section>
+
+  <audio id="bgAudio" src="cacion.mp3" preload="auto"></audio>
+  <!-- ===== SONG ===== -->
+  <section style="padding:34px 26px 10px; text-align:center;">
+    <h2 style="font-family:'Playfair Display',serif; font-weight:600; font-size:34px; line-height:1.15; margin:0 0 22px; color:#2a2426;">Dale play a mi<br>canción favorita</h2>
+
+    <div style="background:linear-gradient(135deg,#d76a97,#c6558a); border-radius:70px; padding:26px 22px; box-shadow:0 14px 30px rgba(180,90,130,.3);">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+        <span style="width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">⤨</span>
+        <span style="color:rgba(255,255,255,.75); font-size:22px;">⏮</span>
+        <button sc-camel-on-click="{{ togglePlay }}" style="width:72px;height:72px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(150,60,100,.35);flex:0 0 auto;">
+          <sc-if value="{{ playing }}" hint-placeholder-val="{{ false }}">
+            <span style="display:flex;gap:6px;"><span style="width:7px;height:26px;background:#d05f92;border-radius:2px;"></span><span style="width:7px;height:26px;background:#d05f92;border-radius:2px;"></span></span>
+          </sc-if>
+          <sc-if value="{{ notPlaying }}" hint-placeholder-val="{{ true }}">
+            <span style="width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:24px solid #d05f92;margin-left:6px;"></span>
+          </sc-if>
+        </button>
+        <span style="color:rgba(255,255,255,.75); font-size:22px;">⏭</span>
+        <span style="width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">↻</span>
+      </div>
+      <div style="margin-top:20px; height:5px; background:rgba(255,255,255,.4); border-radius:4px; position:relative;">
+        <div style="position:absolute; left:0; top:0; bottom:0; background:#fff; border-radius:4px; width: {{ progressPct }};"></div>
+        <div style="position:absolute; top:50%; width:12px;height:12px;border-radius:50%;background:#fff;transform:translate(-50%,-50%); left: {{ progressPct }};"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CALENDAR ===== -->
+  <section style="padding:26px 24px 4px; text-align:center;">
+    <div style="font-family:'Caveat',cursive; font-size:44px; font-weight:600; color:#e39ab8; margin-bottom:14px;">December</div>
+    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:2px 0; font-family:'Playfair Display',serif;">
+      <sc-for list="{{ dow }}" as="d" hint-placeholder-count="7">
+        <div style="font-size:16px; color:#3a2f33; font-weight:600; padding-bottom:8px;">{{ d }}</div>
+      </sc-for>
+      <sc-for list="{{ calDays }}" as="c" hint-placeholder-count="31">
+        <div style="position:relative; font-size:18px; color:#3a2f33; padding:9px 0;">
+          {{ c.n }}
+          <sc-if value="{{ c.special }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute; inset:-4px 0 0 0; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+              <span style="width:34px;height:34px;border:1.5px solid #e39ab8;border-radius:50% 50% 50% 0;transform:rotate(-135deg);display:block;"></span>
+            </span>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ===== COUNTDOWN ===== -->
+  <section style="padding:24px 18px 30px;">
+    <div style="position:relative; padding:22px 6px; text-align:center;">
+      <div style="position:absolute; inset:0; border:1.5px solid #e7c4d3; border-radius:50%; transform:rotate(-4deg);"></div>
+      <div style="position:absolute; inset:6px 10px; border:1px solid #efd6e0; border-radius:50%; transform:rotate(3deg);"></div>
+      <div style="position:relative; display:flex; align-items:flex-start; justify-content:center; gap:4px;">
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-weight:500; font-size:40px; letter-spacing:1px; color:#d087a6; line-height:1;">{{ days }}</div>
+          <div style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:1.5px; color:#c39cae; margin-top:8px;">DÍAS</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-weight:500; font-size:40px; color:#d087a6; line-height:1;">:</div>
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-weight:500; font-size:40px; letter-spacing:1px; color:#d087a6; line-height:1;">{{ hours }}</div>
+          <div style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:1.5px; color:#c39cae; margin-top:8px;">HORAS</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-weight:500; font-size:40px; color:#d087a6; line-height:1;">:</div>
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-weight:500; font-size:40px; letter-spacing:1px; color:#d087a6; line-height:1;">{{ mins }}</div>
+          <div style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:1.5px; color:#c39cae; margin-top:8px;">MINUTOS</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-weight:500; font-size:40px; color:#d087a6; line-height:1;">:</div>
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-weight:500; font-size:40px; letter-spacing:1px; color:#d087a6; line-height:1;">{{ secs }}</div>
+          <div style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:1.5px; color:#c39cae; margin-top:8px;">SEGUNDOS</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TEDDY POLAROIDS ===== -->
+  <section style="padding:10px 22px 6px; position:relative;">
+    <div style="width:74%; margin:0 auto 0 0; background:#f5cadb; padding:10px 10px 26px; border-radius:4px; transform:rotate(-3deg); box-shadow:0 12px 26px rgba(150,90,120,.2); position:relative;">
+      <span style="position:absolute; top:-10px; right:-8px; width:24px;height:24px;background:#f0e3ea;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);"></span>
+      <div style="aspect-ratio:4/3;"><image-slot id="teddy1" shape="rect" placeholder="Foto"></image-slot></div>
+    </div>
+    <div style="width:74%; margin:-30px 0 0 auto; background:#f5cadb; padding:10px 10px 26px; border-radius:4px; transform:rotate(3deg); box-shadow:0 12px 26px rgba(150,90,120,.2); position:relative; z-index:2;">
+      <span style="position:absolute; top:-10px; left:-8px; width:24px;height:24px;background:#f0e3ea;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);"></span>
+      <div style="aspect-ratio:4/3;"><image-slot id="teddy2" shape="rect" placeholder="Foto"></image-slot></div>
+    </div>
+  </section>
+
+  <!-- ===== VENUE ===== -->
+  <section style="padding:30px 22px 10px; text-align:center; position:relative;">
+    <h2 style="font-family:'Playfair Display',serif; font-style:italic; font-weight:600; font-size:32px; color:#c07d9c; margin:0 0 16px;">Lugar del evento</h2>
+    <div style="position:relative;">
+      <img src="fondo%20del%20lugar%20de%20envento.png" alt="" style="position:absolute; inset:-14px -6px -20px; width:calc(100% + 12px); height:calc(100% + 34px); object-fit:cover;">
+      <div style="position:relative; aspect-ratio:3/2; border-radius:4px; overflow:hidden; box-shadow:0 12px 28px rgba(120,90,80,.25);">
+        <image-slot id="venue" shape="rect" placeholder="Foto del lugar"></image-slot>
+      </div>
+    </div>
+    <p style="font-family:'Playfair Display',serif; font-weight:500; font-size:26px; color:#9a8b86; margin:22px 0 18px;">Brocante Terraza. 6:00 pm</p>
+    <a href="https://maps.google.com" target="_blank" style="display:inline-block; background:#c9c4c2; color:#4a4340; font-family:'EB Garamond',serif; font-size:19px; padding:13px 40px; border-radius:40px; text-decoration:underline;">Ver Ubicación</a>
+  </section>
+
+  <!-- ===== MY STORY ===== -->
+  <section style="padding:0; margin:0; width:100%; line-height:0;">
+    <img src="rollo.png" alt="My story" style="display:block; width:100%; height:auto;">
+  </section>
+
+  <!-- ===== INVITE TEXT ===== -->
+  <section style="padding:26px 26px 6px; text-align:center;">
+    <p style="font-family:'Playfair Display',serif; font-size:23px; line-height:1.45; color:#2a2426; margin:0;">¡Me haría muy feliz que vinieras a mi fiesta! Tu presencia haría que mi cumpleaños sea aún más especial. Espero poder compartir risas, momentos lindos y celebrar juntos este día.</p>
+  </section>
+
+  <!-- ===== FLAMINGO + RSVP ===== -->
+  <section style="padding:14px 26px 46px; text-align:center;">
+    <div style="position:relative; margin:0 auto 26px; width:78%;">
+      <img src="fondo%20del%20lugar%20de%20envento.png" alt="" style="position:absolute; inset:-20% -22%; width:calc(100% + 44%); height:calc(100% + 40%); object-fit:contain;">
+      <div style="position:relative; aspect-ratio:1/1;"><image-slot id="flamingo" shape="rect" placeholder="flamingo float"></image-slot></div>
+    </div>
+    <a href="#rsvp" style="display:inline-flex; align-items:center; gap:16px; background:#c58aa4; color:#4a3540; font-family:'Playfair Display',serif; font-weight:500; font-size:21px; letter-spacing:1px; padding:16px 30px; border-radius:40px; text-align:left; line-height:1.15; box-shadow:0 10px 22px rgba(160,110,135,.3);">
+      <span style="text-transform:uppercase;">Confirma aquí<br>tu asistencia</span>
+      <span style="font-size:30px;">🗒</span>
+    </a>
+  </section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="">
+class Component extends DCLogic {
+  state = { playing:false, progress:0, days:'000', hours:'00', mins:'00', secs:'00' };
+
+  componentDidMount(){
+    this.tick();
+    this._t = setInterval(()=>this.tick(), 1000);
+    this._audio = document.getElementById('bgAudio');
+    if(this._audio){
+      this._audio.addEventListener('timeupdate', ()=>{
+        const d = this._audio.duration;
+        this.setState({ progress: d ? this._audio.currentTime/d : 0 });
+      });
+      this._audio.addEventListener('ended', ()=>{
+        this.setState({ playing:false, progress:0 });
+      });
+    }
+  }
+  componentWillUnmount(){
+    clearInterval(this._t);
+  }
+  tick(){
+    const target = new Date('2026-12-13T18:00:00');
+    let diff = Math.max(0, target.getTime() - Date.now());
+    const d = Math.floor(diff/86400000); diff -= d*86400000;
+    const h = Math.floor(diff/3600000);  diff -= h*3600000;
+    const m = Math.floor(diff/60000);    diff -= m*60000;
+    const s = Math.floor(diff/1000);
+    const pad = (n,l=2)=>String(n).padStart(l,'0');
+    this.setState({ days:pad(d,3), hours:pad(h), mins:pad(m), secs:pad(s) });
+  }
+  togglePlay(){
+    const playing = !this.state.playing;
+    if(this._audio){
+      if(playing){ this._audio.play(); } else { this._audio.pause(); }
+    }
+    this.setState({ playing });
+  }
+  renderVals(){
+    const calDays = Array.from({length:31}, (_,i)=>({ n:i+1, special:(i+1)===13 }));
+    return {
+      playing: this.state.playing,
+      notPlaying: !this.state.playing,
+      progressPct: (this.state.progress*100).toFixed(1) + '%',
+      togglePlay: ()=>this.togglePlay(),
+      days:this.state.days, hours:this.state.hours, mins:this.state.mins, secs:this.state.secs,
+      dow: ['S','M','T','W','T','F','S'],
+      calDays,
+      perfs: Array.from({length:14},(_,i)=>i),
+    };
+  }
+}
+</script>
+
+
+</body></html>
